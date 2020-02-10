@@ -2,13 +2,49 @@ require 'rest-client'
 require 'json'
 require 'pry'
 
+BASE_URL = 'http://www.swapi.co/api/'
+
+# def create_Character_url(character_name)
+#   if character_name.include?(" ")
+#     url = BASE_URL + "people/?search=" + character_name.gsub!(" ", "+")
+#   else
+#     url = BASE_URL + character_name
+#   end
+#   return url
+# end
+
+# def create_Film_url(film)
+#   url = BASE_URL + "films/?search=" + character_name.gsub!(" ", "+")
+# end
+
+# # iterate over the response hash to find the collection of `films` for the given
+#   #   `character`
+# def iterate_response(response_hash)
+#   response_hash["results"].map{|character|
+#     character["films"]
+# }
+# end
+#   # collect those film API urls, make a web request to each URL to get the info
+#   #  for that film
+#   def make_Get_Film_request(url)
+#     film_response = RestClient.get(iterate_response(response_hash)[0][1])
+#   end
+
+
+
 def get_character_movies_from_api(character_name)
   #make the web request
-  response_string = RestClient.get('http://www.swapi.co/api/people/')
-  response_hash = JSON.parse(response_string)
+  response = RestClient.get('http://www.swapi.co/api/people/')
+  response_hash = JSON.parse(response)
+  character_data = response_hash["results"].find { |character| character["name"] == character_name}
+  film_url = character_data["films"]
+  film_data = film_url.collect { |film| JSON.parse(RestClient.get(film))}
+  return film_data
+  # film_response = RestClient.get(iterate_response(response_hash)[0][1])
+  # film_hash = JSON.parse(film_response)
+  # p film_hash["title"]
 
-  # iterate over the response hash to find the collection of `films` for the given
-  #   `character`
+  
   # collect those film API urls, make a web request to each URL to get the info
   #  for that film
   # return value of this method should be collection of info about each film.
@@ -20,6 +56,11 @@ end
 
 def print_movies(films)
   # some iteration magic and puts out the movies in a nice list
+  x = films.map{ |character| character["title"]}
+  puts x
+  
+  
+  # this collection will be the argument given to `print_movies`
 end
 
 def show_character_movies(character)
